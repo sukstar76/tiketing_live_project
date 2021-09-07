@@ -1,0 +1,28 @@
+{
+  "name": "tiketing_api_server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.15.3",
+    "better-sqlite3": "^7.4.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "ioredis": "^4.27.8",
+    "kafkajs": "^1.15.0",
+    "lru-cache": "^6.0.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5"
+  },
+  "scripts": {
+    "build": "babel src -d dist",
+    "start": "node dist/server.js"
+  },
+  "private": true,
+  "devDependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.0"
+  }
+}

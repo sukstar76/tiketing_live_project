@@ -1,0 +1,22 @@
+{
+  "name": "message_broker_app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.15.3",
+    "dotenv": "^10.0.0",
+    "kafkajs": "^1.15.0",
+    "redis": "^3.1.2"
+  },
+  "scripts": {
+    "build": "babel src -d dist",
+    "start": "node dist/app.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.0"
+  }
+}

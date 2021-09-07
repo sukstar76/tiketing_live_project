@@ -1,0 +1,16 @@
+CREATE TABLE `users` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `name` TEXT NOT NULL
+);
+
+CREATE TABLE `items` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `name` TEXT NOT NULL
+);
+
+CREATE TABLE `seats` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `item_id` INTEGER NOT NULL,
+  `status` TEXT NOT NULL
+);
+CREATE INDEX `idx_seats_on_item_id` ON `seats`(`item_id`);
