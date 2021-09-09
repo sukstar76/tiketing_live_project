@@ -18,16 +18,6 @@ class App {
       process.env.NODE_ENV === 'production' ? process.env.PORT : 8081;
     const server = this.app.listen(port, () => {});
     server.keepAliveTimeout = 60000;
-    server.timeout = 0;
-    // server.on('clientError', (err, socket) => {
-    //   logger.error(`ERROR: ${err.code} ${err.message}`);
-
-    //   if (err.code == 'ECONNRESET' || !socket.writable) {
-    //     return;
-    //   }
-
-    //   socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-    // });
   }
 
   initializeMiddlewares() {

@@ -79,6 +79,7 @@ export class SeatService {
       })
     )
       throw new ConflictException();
+    // not null 이면 이미 선택됨
 
     if (
       !(await this.seatRedisRepository.setByItemIdAndSeatIdWithLock({
@@ -87,6 +88,7 @@ export class SeatService {
       }))
     )
       throw new ConflictException();
+    // optimistic locking 실패 시
 
     await kafkaProducer.send({
       topic: KAFKA_SEAT_TOPIC,
@@ -96,7 +98,7 @@ export class SeatService {
           value: { seatId, msg: 'SELECTION' },
         }),
       ],
-    });
+    }); // 선택 성공하면 카프카로 던지기
 
     return true;
   }
@@ -113,6 +115,7 @@ export class SeatService {
     });
 
     if (result === 0) throw new ConflictException();
+    // 선택이 되지 않은 좌석 or 이미 선택이 풀렸을 때
 
     await kafkaProducer.send({
       topic: KAFKA_SEAT_TOPIC,

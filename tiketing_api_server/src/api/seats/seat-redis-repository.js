@@ -1,5 +1,5 @@
 import { redisClient } from '../../lib/redis.js';
-import { lruCache } from '../../lib/cache.js';
+//import { lruCache } from '../../lib/cache.js';
 
 export class SeatRedisRepository {
   genKey({ itemId, seatId, name }) {
@@ -16,25 +16,24 @@ export class SeatRedisRepository {
   }
 
   async getSeatsByItemId(itemId) {
-    const lastAccess = await redisClient.get(
-      this.genKey({ itemId, name: 'last-access' })
-    );
+    // const lastAccess = await redisClient.get(
+    //   this.genKey({ itemId, name: 'last-access' })
+    // );
+    // if (
+    //   lruCache.get(itemId) === undefined ||
+    //   lruCache.get(itemId).lastAccess !== lastAccess
+    // ) {
+    //   const data = await redisClient.keys(
+    //     this.genKey({ itemId, name: 'keys' })
+    //   );
+    //   lruCache.set(itemId, {
+    //     data,
+    //     lastAccess,
+    //   });
+    // }
+    // return lruCache.get(itemId).data;
 
-    if (
-      lruCache.get(itemId) === undefined ||
-      lruCache.get(itemId).lastAccess !== lastAccess
-    ) {
-      const data = await redisClient.keys(
-        this.genKey({ itemId, name: 'keys' })
-      );
-
-      lruCache.set(itemId, {
-        data,
-        lastAccess,
-      });
-    }
-
-    return lruCache.get(itemId).data;
+    return await redisClient.keys(this.genKey({ itemId, name: 'keys' }));
   }
 
   async delByItemIdAndSeatId({ itemId, seatId }) {
@@ -47,13 +46,13 @@ export class SeatRedisRepository {
 
   async setByItemIdAndSeatIdWithLock({ itemId, seatId }) {
     const key = this.genKey({ itemId, seatId, name: 'seat' });
-    const lastAccessKey = this.genKey({ itemId, name: 'last-access' });
+    //const lastAccessKey = this.genKey({ itemId, name: 'last-access' });
 
-    redisClient.watch(key);
+    redisClient.watch(key); // redis watch 를 통해 optimistic locking
     return await redisClient
       .multi()
       .set(key, 'SELECTED')
-      .incr(lastAccessKey)
+      //.incr(lastAccessKey)
       .exec();
   }
 }

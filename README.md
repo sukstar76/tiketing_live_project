@@ -40,3 +40,5 @@
 - web socket 을 통한 실시간 통신 서버
 - 사용자를 구독 id 로 나누어 수신 받을 메세지를 구분
 - redis sub을 통해 메시지를 받고 구독 id를 통해 소켓 구분하여 메세지 송신
+
+<img src = "./images/a.png">
