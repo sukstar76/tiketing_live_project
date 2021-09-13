@@ -5,7 +5,7 @@ module.exports = {
       //node_args: ['--experimental-modules'],
       script: './dist/app.js',
       exec_mode: 'cluster',
-      instances: 4,
+      instances: 1,
       env: {
         NODE_ENV: 'production',
       },
