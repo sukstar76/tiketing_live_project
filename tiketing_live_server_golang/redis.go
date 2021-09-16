@@ -12,11 +12,11 @@ type RedisMessage struct {
 }
 
 type Redis struct {
-	pubsub *redis.PubSubConn
-	hub *Hub
+	conn *redis.PubSubConn
+	hubs []*Hub
 }
 
-func connectRedis(h *Hub) *Redis {
+func connectRedis(hubs []*Hub) *Redis {
 	c, err := redis.Dial("tcp","redis:6380")
 	if err != nil {
 		log.Println(err)
@@ -26,19 +26,21 @@ func connectRedis(h *Hub) *Redis {
 	conn.PSubscribe("channel:*")
 
 	return &Redis {
-		pubsub: &redis.PubSubConn{Conn:c},
-		hub: h,
+		conn: &conn,
+		hubs: hubs,
 	}
 }
 
 func (r * Redis) run() {
 	for {
-		switch t := r.pubsub.Receive().(type) {
+		switch t := r.conn.Receive().(type) {
 		case redis.Message:
 			//log.Println(string(t.Data[:]) + "redis")
-			r.hub.subscriber <- &RedisMessage{
-				subscriptionId: t.Channel[8:],
-				message: t.Data,
+			for i:=0; i<len(r.hubs); i++ {
+				r.hubs[i].subscriber <- &RedisMessage{
+					subscriptionId: t.Channel[8:],
+					message:        t.Data,
+				}
 			}
 		}
 	}
