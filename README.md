@@ -42,3 +42,6 @@
 - redis sub을 통해 메시지를 받고 구독 id를 통해 소켓 구분하여 메세지 송신
 
 <img src = "./images/a.png">
+
+### 실험실 오픈
+- lab 실험실 오픈

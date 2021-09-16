@@ -1,0 +1,15 @@
+config:
+  target: 'ws://localhost:5000'
+  phases:
+    - duration: 1
+      arrivalRate: 2000
+
+scenarios:
+  - engine: ws
+    name: subscription
+    flow:
+      - send:
+          itemId: "4"
+          message: 'subscription'
+
+      - think: 100
