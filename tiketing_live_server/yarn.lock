@@ -1872,6 +1872,11 @@ node-releases@^1.1.75:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.75.tgz#6dd8c876b9897a1b8e5a02de26afa79bb54ebbfe"
   integrity sha512-Qe5OUajvqrqDSy6wrWFmMwfJ0jVgwiw4T3KqmbTcZ62qW0gQkheXYhcFM1+lOVcGUoRxcEcfyvFMAnDgaF1VWw==
 
+node-worker-threads-pool@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/node-worker-threads-pool/-/node-worker-threads-pool-1.5.0.tgz#dac48e974d61c048602e325d2461ba6565e6afcc"
+  integrity sha512-UYQdl4/MPd7wWFXCdGU9T9T1One7o1xD6CbNPeAyeNZV66Ib0WrFqW2dO2/UP1yiMwlnu91GQ76u/xnRcFRVmg==
+
 normalize-path@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9"

@@ -1,19 +1,22 @@
 import WebSocket from 'ws';
-import { redisSubClient } from './lib/redis.js';
 import { v4 as uuidv4 } from 'uuid';
+import { Worker } from 'worker_threads';
 import { kafkaProducer, KAFKA_LIVE_TOPIC } from './lib/kafka.js';
 
 export default class App {
   app;
   options;
   socketMap;
+  worker;
 
   constructor() {
     this.options = {
       port: process.env.PORT | 5000,
     };
-    this.socketMap = new Map();
     this.app = new WebSocket.Server(this.options);
+    this.socketMap = new Map();
+    this.worker = new Worker('./dist/lib/worker.js');
+
     this.onSocket();
     this.onSubscribe();
   }
@@ -29,7 +32,7 @@ export default class App {
         if (data.message === 'subscription') {
           const itemId = data.itemId.toString(); // 사용자가 구독할 id
 
-          if (!this.socketMap.has(itemId)) {
+          if (!this.socketMap.get(itemId)) {
             this.socketMap.set(itemId, new Map());
           }
 
@@ -37,24 +40,24 @@ export default class App {
           this.socketMap.get(itemId).set(socket.id, socket);
           // 소켓들을 Map 으로 모아둔다
 
-          kafkaProducer.send({
-            topic: KAFKA_LIVE_TOPIC,
-            messages: [
-              {
-                key: 'subscription',
-                value: JSON.stringify({
-                  itemId,
-                  size: this.socketMap.get(itemId).size,
-                }),
-              },
-            ],
-          }); // log 용
+          // kafkaProducer.send({
+          //   topic: KAFKA_LIVE_TOPIC,
+          //   messages: [
+          //     {
+          //       key: 'subscription',
+          //       value: JSON.stringify({
+          //         itemId,
+          //         size: this.socketMap.get(itemId).size,
+          //       }),
+          //     },
+          //   ],
+          // }); // log 용
         }
       });
 
-      socket.on('close', (socket) => {
-        if (this.socketMap.has(socket.subscriptionId)) {
-          // socket 연결 끊기면 map 에서 delete
+      socket.on('close', (code) => {
+        if (this.socketMap.get(socket.subscriptionId)) {
+          // socket 연결 끊기면 Map 에서 delete
           this.socketMap.get(socket.subscriptionId).delete(socket.id);
 
           if (this.socketMap.get(socket.subscriptionId).size === 0) {
@@ -66,32 +69,20 @@ export default class App {
   }
 
   onSubscribe() {
+    this.worker.on('message', (data) => {
+      this.sendMessage(data);
+    });
     // redis sub
-    redisSubClient.on('pmessage', (pattern, channel, message) => {
-      if (pattern.startsWith('channel:')) {
-        const subscriptionId = channel.substring(8);
-        const sockets = this.socketMap.get(subscriptionId);
+  }
 
-        kafkaProducer.send({
-          topic: KAFKA_LIVE_TOPIC,
-          messages: [
-            {
-              key: 'send',
-              value: JSON.stringify({
-                itemId: subscriptionId,
-                size: sockets.size,
-                message: message,
-              }),
-            },
-          ],
-        }); // log 용
+  sendMessage({ message, subscriptionId }) {
+    setImmediate(() => {
+      const sockets = this.socketMap.get(subscriptionId);
 
-        if (sockets) {
-          for (const socket of sockets.values()) {
-            // 구독한 모든 소켓에게 메세지 보내기
-            socket.send(message);
-          }
-        }
+      if (sockets) {
+        sockets.forEach((socket, socketId, mapObj) => {
+          socket.send(message);
+        });
       }
     });
   }
